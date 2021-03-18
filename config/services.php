@@ -44,4 +44,11 @@ return [
         'client_email' => env('CLIENT_EMAIL'),
         'client_id' => env('CLIENT_ID')
     ],
+
+    'ticket' => [
+        'hs_pipeline' => env('HS_PIPELINE'),
+        'hs_pipeline_stage' => env('HS_PIPELINE_STAGE'),
+        'hs_ticket_priority' => env('HS_TICKET_PRIORITY'),
+        'hubspot_owner_id' => env('HUBSPOT_OWNER_ID')
+    ],
 ];

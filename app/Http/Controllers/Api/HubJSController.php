@@ -78,7 +78,7 @@ class HubJSController extends Controller
             $dataset = $this->bigQuery->dataset($datasetId);
             $table = $dataset->table($tableId);
 
-            $id_ticket = $this->createAssociation($body['id']);
+            $id_ticket = $this->createAssociation($body['id'], $body['properties']['phone']);
 
             $data = [];
 
@@ -100,45 +100,41 @@ class HubJSController extends Controller
     /**
      *
      */
-    public function createAssociation(Request $request)
+    public function createAssociation($id, $phone)
     {
-        if(isset($request->contact_id)) {
-            $ticket_id = $this->createTicket($request);
+        $ticket_id = $this->createTicket($phone);
 
-            $data = [
-                "inputs" => [
-                    [
-                        "from" => [
-                            "id" => $request->contact_id
-                        ],
-                        "to" => [
-                            "id" => $ticket_id
-                        ],
-                        "type" => "contact_to_ticket"
-                    ]
+        $data = [
+            "inputs" => [
+                [
+                    "from" => [
+                        "id" => $id
+                    ],
+                    "to" => [
+                        "id" => $ticket_id
+                    ],
+                    "type" => "contact_to_ticket"
                 ]
-            ];
+            ]
+        ];
 
-            $response = Http::withHeaders($this->paramsApiHubspot)->post('https://api.hubapi.com/crm/v3/associations/contact/ticket/batch/create', $data)->json();
+        $response = Http::withHeaders($this->paramsApiHubspot)->post('https://api.hubapi.com/crm/v3/associations/contact/ticket/batch/create', $data)->json();
 
-            return response()->json($response);
-        } else {
-            return response()->json('Something wrong, please try again!');
-        }
+        return response()->json($response);
     }
 
     /**
      *
      */
-    public function createTicket($request)
+    public function createTicket($phone)
     {
         $data = [
             'properties' => [
-                "hs_pipeline" => "11561288",
-                "hs_pipeline_stage" => "11561289",
-                "hs_ticket_priority" => "HIGH",
-                "hubspot_owner_id" => "54760307",
-                "subject" => $request->subject ?? $request->contact_id
+                "hs_pipeline" => config('services.ticket.hs_pipeline'),
+                "hs_pipeline_stage" => config('services.ticket.hs_pipeline_stage'),
+                "hs_ticket_priority" => config('services.ticket.hs_ticket_priority'),
+                "hubspot_owner_id" => config('services.ticket.hubspot_owner_id'),
+                "subject" => $phone ?? ""
             ]
         ];
 
