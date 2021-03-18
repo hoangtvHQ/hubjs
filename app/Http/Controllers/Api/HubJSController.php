@@ -196,7 +196,7 @@ class HubJSController extends Controller
             'grant_type' => 'refresh_token',
             'client_id' => config('services.hubspot.client_id'),
             'client_secret' => config('services.hubspot.client_secret'),
-            'redirect_uri' => 'http://localhost:8000/oauth/callback',
+            'redirect_uri' => url('/oauth/callback'),
             'refresh_token' => $this->accessToken['refresh_token']
         ]);
         
